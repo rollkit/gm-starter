@@ -1,4 +1,47 @@
 # gm
+
+## Starting this starter rollup in Gitpod
+
+1. Click this link: https://gitpod.io/new/#/https://github.com/rollkit/gm-starter
+2. Set up the Gitpod project
+3. Open the terminal in Gitpod
+4. Run the following to start the devnet:
+
+```bash
+make init
+```
+
+5. Keep an eye on the logs for the auth token. When passing the --rollkit.da_config flag later in the tutorial, it will require `auth_token`` to be passed in. The auth token with write permission is required to submit blobs and can be obtained from the logs on local-celestia-devnet before the bridge node starts.
+
+```bash
+WARNING: Keep this auth token secret **DO NOT** log this auth token outside of development. CELESTIA_NODE_AUTH_TOKEN=
+
+WARNING: Celestia custom network specified. Only use this option if the node is freshly created and initialized.
+**DO NOT** run a custom network over an already-existing node store!
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJwdWJsaWMiLCJyZWFkIiwid3JpdGUiLCJhZG1pbiJdfQ.a_-CStbScoe_ot8Z1K9YaccvhngeieiSBdgO4uObuvI 
+```
+
+6. Open another terminal and set the auth token to the one from your logs:
+
+```bash
+export AUTH_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJwdWJsaWMiLCJyZWFkIiwid3JpdGUiLCJhZG1pbiJdfQ.a_-CStbScoe_ot8Z1K9YaccvhngeieiSBdgO4uObuvI 
+```
+
+7. Start the rollup with:
+
+```bash
+make start
+```
+
+8. Shut down the rollup with:
+
+```bash
+make stop
+```
+
+The auth token is the last string, which you can now set as a variable. (It's long, so don't forget to copy the whole thing!):
+
 **gm** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
 
 ## Get started
