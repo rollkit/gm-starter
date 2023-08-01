@@ -10,3 +10,6 @@ start:
 
 stop:
 	bash stop.sh
+
+setup-chain:
+	bash setup_chain.sh
