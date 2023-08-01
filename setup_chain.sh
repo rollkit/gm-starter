@@ -22,27 +22,35 @@ DA_BLOCK_HEIGHT=$(curl http://0.0.0.0:26657/block | jq -r '.result.block.header.
 echo $DA_BLOCK_HEIGHT
 
 # reset any existing genesis/chain data
-docker run ghcr.io/rollkit/gm:1d9f5a3 tendermint unsafe-reset-all
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 tendermint unsafe-reset-all
 
 # initialize the validator with the chain ID you set
-docker run ghcr.io/rollkit/gm:1d9f5a3 init $VALIDATOR_NAME --chain-id $CHAIN_ID
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 init $VALIDATOR_NAME --chain-id $CHAIN_ID
 
 # add keys for key 1 and key 2 to keyring-backend test
-docker run ghcr.io/rollkit/gm:1d9f5a3 keys add $KEY_NAME --keyring-backend test
-docker run ghcr.io/rollkit/gm:1d9f5a3 keys add $KEY_2_NAME --keyring-backend test
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 keys add $KEY_NAME --keyring-backend test
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 keys add $KEY_2_NAME --keyring-backend test
 
 # add these as genesis accounts
-docker run ghcr.io/rollkit/gm:1d9f5a3 add-genesis-account $KEY_NAME $TOKEN_AMOUNT --keyring-backend test
-docker run ghcr.io/rollkit/gm:1d9f5a3 add-genesis-account $KEY_2_NAME $TOKEN_AMOUNT --keyring-backend test
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 add-genesis-account $KEY_NAME $TOKEN_AMOUNT --keyring-backend test
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 add-genesis-account $KEY_2_NAME $TOKEN_AMOUNT --keyring-backend test
 
 # set the staking amounts in the genesis transaction
-docker run ghcr.io/rollkit/gm:1d9f5a3 gentx $KEY_NAME $STAKING_AMOUNT --chain-id $CHAIN_ID --keyring-backend test
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 gentx $KEY_NAME $STAKING_AMOUNT --chain-id $CHAIN_ID --keyring-backend test
 
 # collect genesis transactions
-docker run ghcr.io/rollkit/gm:1d9f5a3 collect-gentxs
+docker run -it ghcr.io/rollkit/gm:1d9f5a3 collect-gentxs
 
 # start the chain
-docker run ghcr.io/rollkit/gm:1d9f5a3 start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://localhost:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT
+# docker run -it ghcr.io/rollkit/gm:1d9f5a3 start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://localhost:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT
+
+docker run -it \
+    -v /path/to/keys:/home/rollkit/.gm/config \
+    -v /path/to/genesis:/home/rollkit/.gm/config/genesis.json \
+    ghcr.io/rollkit/gm:1d9f5a3 \
+    start --rollkit.aggregator true --rollkit.da_layer celestia \
+    --rollkit.da_config='{"base_url":"http://localhost:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' \
+    --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT
 
 # uncomment the next command if you are using lazy aggregation
-# ./gmd start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://localhost:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rollkit.lazy_aggregator
+# docker run -it ghcr.io/rollkit/gm:1d9f5a3 start --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://localhost:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT --rollkit.lazy_aggregator
